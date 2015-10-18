@@ -1,0 +1,39 @@
+#Práctica 6 - Fernando Aliaga Ramón
+
+Parte 1
+-------
+
+Paso 1 - Preparamos la máquina que envía: Modificamos el fichero /etc/rsyslog.conf
+		 añadiendo al final del fichero 'local0.info @@192.168.56.2:514' y reiniciamos
+		 el servicio de logs ejecutando 'service rsyslog restart'.
+Paso 2 - Preparamos la máquina que recibe: Modificamos el fichero /etc/rsyslog.conf
+		 Buscamos en el fichero las siguientes lineas:
+		 # provides UDP syslog reception
+		 #$ModLoad imudp
+		 #$UDPServerRun 514
+
+		 # provides TCP syslog reception
+		 #$ModLoad imtcp
+		 #$InputTCPServerRun 514
+
+		 Quitamos de comentario las 2 lineas del transporte que hemos seleccionado 
+		 anteriormente (TCP(@@) o UDP(@)).
+		 Añadimos al final del fichero 'local0.info /var/log/monitorizacion.log'
+		 Reiniciamos el servicio de logs ejecutando 'service rsyslog restart'.
+Paso 3 - Configuramos cron editando el fichero '/etc/crontab' añadiendo:
+		 * MAILTO=/dev/null (no enviar mails)
+		 * HOME=/ (ruta base)
+		 * */2 * * * root /home/user/NOMBRESCRIPT.sh >> /var/log/monitorizacion.log 
+Paso 4 - Reiniciamos: service cron restart
+Paso 5 - Ejecutamos el script.
+
+
+Parte 2
+-------
+
+Paso 1 - Instalamos POstfix : apt-get install postfix
+Paso 2 - Instalamos el logcheck : apt-get install logcheck
+Paso 3 - Editamos el fichero '/etc/logcheck/logcheck.conf' añadiendo:
+		 * SENDMAILTO="root"
+Paso 4 - Editamos el fichero '/etc/logcheck/logcheck.files' añadiendo:
+		 * /var/log/monitorizacion.log
